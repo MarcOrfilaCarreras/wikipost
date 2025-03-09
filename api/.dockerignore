@@ -1,0 +1,12 @@
+**/Dockerfile
+**/.dockerignore
+
+**/.__pycache__
+**/.venv
+
+**/app.log
+**/db.sqlite
+**/Makefile
+**/test
+**/.env
+**/.env.example

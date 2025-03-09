@@ -1,0 +1,44 @@
+version: "3"
+
+services:
+  api:
+    container_name: api
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    volumes:
+      - ./db.sqlite:/app/db.sqlite
+      - ./app.log:/app/app.log
+    environment:
+      - API_ENVIRONMENT=production
+      - API_DATABASE_FILE=db.sqlite
+      - API_JWT_TOKEN=<replace-this>
+      - API_OPENROUTER_KEY=<replace-this>
+      - API_REDIS_HOST=127.0.0.1
+      - API_REDIS_PORT=6379
+      - API_REDIS_DB=0
+      - API_ENCRYPTION_KEY=<replace-this>
+      - API_SENTRY=<replace-this>
+    restart: always
+
+  web:
+    container_name: web
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_URL: https://wikipost-api.marcorfilacarreras.cloud/
+    ports:
+      - 8081:80
+    restart: always
+
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis:/data
+    command: bash -c "redis-server --appendonly yes"
+    restart: always
