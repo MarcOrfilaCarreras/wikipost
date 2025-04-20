@@ -202,6 +202,12 @@ class Instagram:
             raise ValueError('You must provide the description for the photo')
         return self.client.photo_upload(Path(path), description).pk
 
+    def upload_history(self, path=None):
+        if path is None:
+            raise ValueError('You must provide the path to the photo')
+
+        return self.client.photo_upload_to_story(path).pk
+
     def challenge_code_handler(self, username, choice):
         if choice == ChallengeChoice.EMAIL and self.email_retriever:
             return self.email_retriever.get_verification_code(username)

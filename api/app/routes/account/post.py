@@ -29,7 +29,7 @@ def post(post=None):
         return jsonify({'message': 'Post not found.', 'status': 'fail'}), 400
 
     updated_data = {key: data.get(key, getattr(post_, key)) for key in post_.__dict__.keys(
-    ) if not key.startswith('_') and (key not in ['id', 'created_at'])}
+    ) if not key.startswith('_') and (key not in ['id', 'created_at', 'questions'])}
 
     updated_post = update_post(id=post, **updated_data)
     if not updated_post:

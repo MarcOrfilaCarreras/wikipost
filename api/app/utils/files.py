@@ -1,3 +1,5 @@
+from urllib.parse import unquote
+
 import requests
 
 
@@ -15,11 +17,16 @@ def download_image(url: str, path: str = '/tmp', filename: str = None):
     if not response.ok:
         return None
 
-    with open(f'{path}/{filename}', 'wb') as handle:
+    decoded_filename = unquote(filename)
+    decoded_filename = decoded_filename.replace("'", '')
+    decoded_filename = decoded_filename.replace('(', '')
+    decoded_filename = decoded_filename.replace(')', '')
+
+    with open(f'{path}/{decoded_filename}', 'wb') as handle:
         for block in response.iter_content(1024):
             if not block:
                 break
 
             handle.write(block)
 
-    return f'{path}/{filename}'
+    return f'{path}/{decoded_filename}'

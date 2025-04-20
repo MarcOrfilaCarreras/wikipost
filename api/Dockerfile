@@ -7,6 +7,7 @@ COPY ./requirements.txt /app/requirements.txt
 
 COPY . /app
 
+RUN apt update -y && apt-get install fonts-dejavu -y
 RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 8080

@@ -1,3 +1,4 @@
+import json
 import random
 
 from app.external.ai import LLM
@@ -5,7 +6,9 @@ from app.external.google import ImageDownloader
 from app.external.wikipedia import Scraper
 from app.services.article import delete_article
 from app.services.article import get_article
+from app.services.post import create_option
 from app.services.post import create_post
+from app.services.post import create_question
 from app.services.user import get_user_settings
 from app.utils.jwt import JWTManager
 from app.utils.routes import authorization_required
@@ -99,9 +102,42 @@ def generate(article=None):
     result = parser.render(result)
 
     post = create_post(user=user, content=result, url=url)
-
     if post is None:
         return jsonify({'message': 'Post could not be created.', 'status': 'fail'}), 400
+
+    message = """
+    Given the text below, generate one multiple-choice question in the same language as the text. The question should be based on the content of the text. Provide three answer options. Exactly one option should be marked correct using "correct": 1, and the others should be marked as incorrect with "correct": 0.
+
+    Return the result strictly in the following JSON format:
+    {
+        "question": "",
+        "options": [
+            {"option": "", "correct": 0},
+            {"option": "", "correct": 1},
+            {"option": "", "correct": 0}
+        ]
+    }
+
+    Use the following text to generate the question and options:\n
+    """
+    message = message + article.content
+
+    result = llm.query(message=message)
+    result = result.replace('"', "'")
+    result = parser.render(result)
+    result = result.replace("'", '"')
+
+    result_parsed = json.loads(result)
+
+    question = None
+    if 'question' in result_parsed.keys():
+        question = create_question(
+            post=post.id, content=result_parsed['question'])
+
+    if (question is not None) and ('options' in result_parsed.keys()):
+        for option in result_parsed['options']:
+            create_option(question=question.id,
+                          content=option['option'], is_correct=option['correct'])
 
     return jsonify({'data': post.to_dict(), 'status': 'success'}), 200
 
