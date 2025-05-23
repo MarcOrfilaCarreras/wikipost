@@ -29,7 +29,7 @@ class OpenRouter(Model):
         self.api_url = api_url
         self.query_path = query_path
 
-    def query(self, message, model='sophosympatheia/rogue-rose-103b-v0.2:free'):
+    def query(self, message, model='meta-llama/llama-4-maverick:free'):
         headers = {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + self.api_key,
