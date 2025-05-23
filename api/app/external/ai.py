@@ -2,6 +2,7 @@ import json
 import os
 
 import requests
+from app.extensions import logging
 
 
 class Model(object):
@@ -48,6 +49,8 @@ class OpenRouter(Model):
             f'{self.api_url}{self.query_path}', headers=headers, json=payload)
 
         if response.status_code != 200:
+            logging.error(
+            f'[LLM (OpenRouter)] Error in response: {response.content}')
             return None
 
         content = response.content.strip()
