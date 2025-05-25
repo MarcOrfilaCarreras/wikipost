@@ -10,7 +10,7 @@ from app.external.instagram import Instagram
 from app.services.user import get_user_posts
 from app.services.user import get_user_settings
 from app.utils.files import download_image
-from app.utils.instagram import generate_instagram_poll
+from app.utils.instagram import generate_instagram_story
 
 
 def create_post(*, user=None, content=None, url=None):
@@ -130,9 +130,9 @@ def upload_post(*, user=None):
                 raise Exception('Instagram post could not be created')
 
             if (len(post.get_questions()) > 0) and (path is not None):
-                generate_instagram_poll(question = post.questions[0].content, answers = [str(o.content) for o in post.questions[0].options], background = path, path = '/tmp/' + post.questions[0].id + '.png')
+                generate_instagram_story(background = path, path = '/tmp/' + post.questions[0].id + '.png')
 
-                client.upload_history(path='/tmp/' + post.questions[0].id + '.png')
+                client.upload_history(path='/tmp/' + post.questions[0].id + '.png', poll={'title': post.questions[0].content, 'options': [str(o.content) for o in post.questions[0].options]})
 
             updated_post_data = post.to_dict()
             updated_post_data['published'] = True

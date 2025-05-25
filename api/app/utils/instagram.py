@@ -59,6 +59,12 @@ def wrap_text(draw, text, font, max_width):
         lines.append(current)
     return lines
 
+def generate_instagram_story(*, background, path):
+    W, H = 1080, 1920
+
+    bg = ImageOps.fit(Image.open(background).convert('RGB'), (W, H))
+    bg = apply_bottom_to_top_fade(bg)
+    bg.save(path)
 
 def generate_instagram_poll(*, question, answers, background, path):
     W, H = 1080, 1920

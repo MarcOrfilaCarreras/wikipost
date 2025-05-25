@@ -12,6 +12,7 @@ import instagrapi
 import requests
 from app.extensions import logging
 from instagrapi.mixins.challenge import ChallengeChoice
+from instagrapi.types import StoryPoll
 
 
 class EmailCodeRetriever:
@@ -202,11 +203,16 @@ class Instagram:
             raise ValueError('You must provide the description for the photo')
         return self.client.photo_upload(Path(path), description).pk
 
-    def upload_history(self, path=None):
+    def upload_history(self, path=None, poll=None):
+        kwargs = {}
+
         if path is None:
             raise ValueError('You must provide the path to the photo')
 
-        return self.client.photo_upload_to_story(path).pk
+        if poll is not None:
+            kwargs['polls'] = [StoryPoll(x = 0.5, y = 0.7, width = 0.7, height = 0.3, question = poll['title'], options = poll['options'])]
+
+        return self.client.photo_upload_to_story(path, **kwargs).pk
 
     def challenge_code_handler(self, username, choice):
         if choice == ChallengeChoice.EMAIL and self.email_retriever:
