@@ -123,9 +123,8 @@ def generate(article=None):
     message = message + article.content
 
     result = llm.query(message=message)
-    result = result.replace('"', "'")
+    result = result.replace("'", '')
     result = parser.render(result)
-    result = result.replace("'", '"')
 
     result_parsed = json.loads(result)
 
